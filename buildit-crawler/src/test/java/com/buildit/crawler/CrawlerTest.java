@@ -24,8 +24,9 @@ public class CrawlerTest {
     Crawler crawler;
 
     String testURL1 = "http://www.bbc.co.uk";
-    String testURL2 = "http://www.dummy.co.uk";
+    String root = "https://crawler-test.com/";
     String linksWithFileTypes = "https://crawler-test.com/urls/links_to_non_html_filetypes";
+    String repeatedNonFollowExternalLinks = "https://crawler-test.com/links/page_with_external_links";
 
     @BeforeEach
     void init(){
@@ -64,16 +65,31 @@ public class CrawlerTest {
 //    }
 
     @Test
-    @DisplayName("Returns url with filetypes")
-    public void willReturnNonURLFileTypes() {
+    @DisplayName("Count of static endpoints returned")
+    public void willReturnStaticContent() {
+        //when
         Map<String, Set> indexOfCrawledLinks = crawler.crawl(linksWithFileTypes, 0);
         List<String> staticContent = Arrays.asList("https://crawler-test.com/", "https://crawler-test.com/images/logo_small.jpg", "https://crawler-test.com/images/logo_small.JPG", "https://crawler-test.com/pdf_open_parameters.pdf", "https://crawler-test.com/pdf_open_parameters.PDF", "https://crawler-test.com/Dashboard/Charts/FCF_Column2D.swf", "https://crawler-test.com/Dashboard/Charts/FCF_Column2D.SWF");
+
+        //then
         Set<String> indexedElements = indexOfCrawledLinks.get("https://crawler-test.com/urls/links_to_non_html_filetypes");
         assertThat(indexedElements.size()).isEqualTo(7);
         assertThat(indexedElements.containsAll(staticContent));
     }
 
+    @Test
+    @DisplayName("sitemap for repeated external links")
+    public void willReturnSiteMapWith3ExternalLinksAnd1RootLinkWhenPageHas7RepeatedLinks() {
+        //when
+        Map<String, Set> indexOfCrawledLinks = crawler.crawl(repeatedNonFollowExternalLinks, 0);
+        List<String> staticContent = Arrays.asList("https://crawler-test.com/", "http://robotto.org", "http://semetrical.com", "http://deepcrawl.co.uk");
+        Set<String> indexedElements = indexOfCrawledLinks.get(repeatedNonFollowExternalLinks);
 
+        //then
+        assertThat(indexedElements.size()).isEqualTo(4);
+        assertThat(root).isEqualTo(indexedElements.iterator().next());
+        assertThat(indexedElements.containsAll(staticContent));
+    }
 
     @Test
     public void willReturnExceptionForInvalidOrNullURL() {
