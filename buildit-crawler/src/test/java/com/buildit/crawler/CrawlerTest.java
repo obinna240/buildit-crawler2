@@ -15,11 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class CrawlerTest {
 
     Crawler crawler;
-
-    String testURL1 = "http://www.bbc.co.uk";
     String root = "https://crawler-test.com/";
     String linksWithFileTypes = "https://crawler-test.com/urls/links_to_non_html_filetypes";
     String repeatedNonFollowExternalLinks = "https://crawler-test.com/links/page_with_external_links";
+    String externalLinks = "https://crawler-test.com/links/external_links_to_disallwed_urls";
+
 
     @BeforeEach
     void init(){
@@ -30,10 +30,9 @@ public class CrawlerTest {
     @DisplayName("Invalid depth exception")
     public void willReturnExceptionForInvalidDepth() {
         assertThrows(InvalidDepthException.class, () -> {
-            crawler.crawl(testURL1, -1);
+            crawler.crawl(root, -1);
         });
     }
-
 
     @Test
     @DisplayName("Count of static endpoints returned")
@@ -61,6 +60,31 @@ public class CrawlerTest {
         assertThat(root).isEqualTo(indexedElements.iterator().next());
         assertThat(indexedElements.containsAll(staticContent));
     }
+
+    /**
+     * This page consists of 6 links
+     * 4 external links to dailymail, the guardian, the sun and the independent
+     * This test will return all 4 external links as elements of the main link but will not
+     * visit those pages.
+     * It will visit the link to the root page and return links associated with it
+     */
+    @Test
+    @DisplayName("sitemap for repeated external links")
+    public void willReturnAllExternalLinksWithoutCrwalingThem() {
+        //consists of 6 links
+        //when
+        Map<String, Set> indexOfExternalLinks = crawler.crawl(externalLinks, 0);
+        List<String> externalLinks = Arrays.asList("http://www.dailymail.co.uk/money/index.html", "http://www.independent.co.uk/independentplus/", "http://www.theguardian.com/whsmiths/", "http://www.thesun.co.uk/sol/homepage/showbiz/");
+        Set<String> indexedElements = indexOfExternalLinks.get(repeatedNonFollowExternalLinks);
+
+        //then -- assert that the site map does not have any of the external elments as a key
+        assertThat(indexOfExternalLinks.containsKey(externalLinks.get(0))).isFalse();
+        assertThat(indexOfExternalLinks.containsKey(externalLinks.get(1))).isFalse();
+        assertThat(indexOfExternalLinks.containsKey(externalLinks.get(2))).isFalse();
+        assertThat(indexOfExternalLinks.containsKey(externalLinks.get(3))).isFalse();
+
+    }
+
 
     @Test
     public void willReturnExceptionForInvalidOrNullURL() {
