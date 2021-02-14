@@ -21,7 +21,7 @@ import java.util.function.BiPredicate;
 
 public final class Crawler {
 
-    private final static int DEFAULT_DEPTH = 5;
+    private final static int DEFAULT_DEPTH = 100;
     private final Map<String, Set<String>> indexMap;
     private final Set<String> urlIndex;
     private final static String HTML_ANCHOR_REF = "a[href]";
@@ -34,7 +34,7 @@ public final class Crawler {
          this.urlIndex = new HashSet<>();
     }
 
-    public void crawl(String url, int crawlDepth) {
+    public Map crawl(String url, int crawlDepth) {
         if (!validateUrl(url)) {
             throw new InvalidCrawlURLException("The URL is invalid");
         }
@@ -54,8 +54,10 @@ public final class Crawler {
                 links.stream().forEach(link -> {
                     populateIndex(indexMap, url, link);
                     writeJsonSiteMap(indexMap);
-                    if(COMPARE_DOMAIN.test(url, link.attr("abs"))) {
-                        crawl(link.attr("abs"), finalCrawlDepth);
+                    String aa= link.attr("href");
+                    if(COMPARE_DOMAIN.test(url, link.attr("href"))) {
+                        String linkToCrawl = StringUtils.startsWith(link.attr("href"), "/") ? url+link.attr("href") : link.attr("abs");
+                        crawl(linkToCrawl, finalCrawlDepth);
                     }
 
                 });
@@ -64,6 +66,7 @@ public final class Crawler {
 
             }
         }
+        return indexMap;
     }
 
     /**
@@ -100,8 +103,12 @@ public final class Crawler {
         }
         else {
             Set<String> index_set = new LinkedHashSet<>();
-            index_set.add(href);
-            index_set.add(imgsrc);
+            if (StringUtils.isNotBlank(href)) {
+                index_set.add(href);
+            }
+            if (StringUtils.isNotBlank(imgsrc)) {
+                index_set.add(imgsrc);
+            }
             index.put(url, index_set);
         }
     }
@@ -148,8 +155,5 @@ public final class Crawler {
         return false;
     }
 
-    public static void main(String[] args){
-        Crawler c = new Crawler();
-        c.crawl("https://crawler-test.com", 0);
-    }
+   
 }
