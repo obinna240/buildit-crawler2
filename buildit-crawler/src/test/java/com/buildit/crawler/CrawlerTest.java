@@ -10,6 +10,10 @@ import com.buildit.crawler.exceptions.InvalidDepthException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,28 +25,36 @@ public class CrawlerTest {
 
     String testURL1 = "http://www.bbc.co.uk";
     String testURL2 = "http://www.dummy.co.uk";
+    String linksWithFileTypes = "https://crawler-test.com/urls/links_to_non_html_filetypes";
 
     @BeforeEach
     void init(){
         crawler = new Crawler();
     }
 
-    @Test
-    @DisplayName("Invalid url test")
-    public void willReturnFalseForInvalidURL(){
-        UrlValidator urlValidator = new UrlValidator();
-        boolean isValid = urlValidator.isValid("bbc.co.uk");
-        assertThat(isValid).isTrue();
-    }
+//    @Test
+//    @DisplayName("Links with files)
+//    public void willReturnLinksWithNonHtmlFileTypes() {
+//        crawler.craw
+//        crawler.crawl(linksWithFileTypes);
+//
+//    }
 
-    @Test
-    @DisplayName("Invalid depth exception")
-    public void willReturnExceptionForInvalidDepth(){
-        assertThrows(InvalidDepthException.class, () -> {
-            crawler.crawl(testURL1, -1);
-        });
-
-    }
+//    @Test
+//    @DisplayName("Invalid url test")
+//    public void willReturnFalseForInvalidURL(){
+//        UrlValidator urlValidator = new UrlValidator();
+//        boolean isValid = urlValidator.isValid("bbc.co.uk");
+//        assertThat(isValid).isTrue();
+//    }
+//
+//    @Test
+//    @DisplayName("Invalid depth exception")
+//    public void willReturnExceptionForInvalidDepth() {
+//        assertThrows(InvalidDepthException.class, () -> {
+//            crawler.crawl(testURL1, -1);
+//        });
+//    }
 
 //    @Test
 //    @DisplayName("Invalid depth exception")
@@ -50,6 +62,18 @@ public class CrawlerTest {
 //       crawler.crawl("dummyUrl", 10);
 //       assertEquals(crawler.getDepth(), 3);
 //    }
+
+    @Test
+    @DisplayName("Returns url with filetypes")
+    public void willReturnNonURLFileTypes() {
+        Map<String, Set> indexOfCrawledLinks = crawler.crawl(linksWithFileTypes, 0);
+        List<String> staticContent = Arrays.asList("https://crawler-test.com/", "https://crawler-test.com/images/logo_small.jpg", "https://crawler-test.com/images/logo_small.JPG", "https://crawler-test.com/pdf_open_parameters.pdf", "https://crawler-test.com/pdf_open_parameters.PDF", "https://crawler-test.com/Dashboard/Charts/FCF_Column2D.swf", "https://crawler-test.com/Dashboard/Charts/FCF_Column2D.SWF");
+        Set<String> indexedElements = indexOfCrawledLinks.get("https://crawler-test.com/urls/links_to_non_html_filetypes");
+        assertThat(indexedElements.size()).isEqualTo(7);
+        assertThat(indexedElements.containsAll(staticContent));
+    }
+
+
 
     @Test
     public void willReturnExceptionForInvalidOrNullURL() {
@@ -101,7 +125,7 @@ public class CrawlerTest {
     }
 
     public void willReturnMapOfLinks(){
-//        assertEquals(3, crawler.crawl(dummyUrl)).size()) ;
+//        assertEquals(3, crawler.crawl("https://crawler-test.com")).size()) ;
     }
 
 
