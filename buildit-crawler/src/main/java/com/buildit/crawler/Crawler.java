@@ -21,7 +21,7 @@ import java.util.function.BiPredicate;
 
 public final class Crawler {
 
-    private final static int DEFAULT_DEPTH = 100;
+    private final static int DEFAULT_DEPTH = 5;
     private final Map<String, Set<String>> indexMap;
     private final Set<String> urlIndex;
     private final static String HTML_ANCHOR_REF = "a[href]";
@@ -48,22 +48,21 @@ public final class Crawler {
                 Elements links = doc.select(HTML_ANCHOR_REF);
                 Elements imageLinks = doc.select(HTML_IMG_REF);
                 links.addAll(imageLinks);
-                crawlDepth++;
+                int finalCrawlDepth = crawlDepth++;
 
-                int finalCrawlDepth = crawlDepth;
                 links.stream().forEach(link -> {
                     populateIndex(indexMap, url, link);
                     writeJsonSiteMap(indexMap);
-                    String aa= link.attr("href");
-                    if(COMPARE_DOMAIN.test(url, link.attr("href"))) {
-                        String linkToCrawl = StringUtils.startsWith(link.attr("href"), "/") ? url+link.attr("href") : link.attr("abs");
-                        crawl(linkToCrawl, finalCrawlDepth);
+
+                    if(COMPARE_DOMAIN.test(url, link.attr("abs:href"))) {
+//                        String linkToCrawl = StringUtils.startsWith(link.attr("abs:href"), "/") ? url+link.attr("abs:href") : link.attr("abs:href");
+                        crawl(link.attr("abs:href"), finalCrawlDepth);
                     }
 
                 });
             }
             catch(Exception ex) {
-
+                LOGGER.info(ex.getMessage());
             }
         }
         return indexMap;
@@ -130,7 +129,7 @@ public final class Crawler {
      * @param url2
      * @return
      */
-    public boolean compareDomainName(String url1, String url2) {
+    private boolean compareDomainName(String url1, String url2) {
         try {
             //for internal urls
             if(StringUtils.startsWith(url2, "/")) {
@@ -155,5 +154,6 @@ public final class Crawler {
         return false;
     }
 
-   
+
+
 }
