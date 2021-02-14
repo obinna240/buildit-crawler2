@@ -44,6 +44,13 @@ public class CrawlerTest {
 
     }
 
+//    @Test
+//    @DisplayName("Invalid depth exception")
+//    public void willWriteCrawledPageToJsonAndReturnFile(){
+//       crawler.crawl("dummyUrl", 10);
+//       assertEquals(crawler.getDepth(), 3);
+//    }
+
     @Test
     public void willReturnExceptionForInvalidOrNullURL() {
         assertThrows(InvalidCrawlURLException.class, () -> {
@@ -77,6 +84,20 @@ public class CrawlerTest {
 
         boolean compare = domainName.equalsIgnoreCase(domainName2);
         assertThat(compare).isFalse();
+    }
+
+    @Test
+    public void compareDomains() throws Exception {
+        String url1 = "http://www.google.co.uk#1234";
+        String url2 = "https://www.abcnews.com";
+        assertThat(crawler.compareDomainName(url1, url2)).isFalse();
+    }
+
+    @Test
+    public void compareDomainsWhenAnInternalLinkIsUsed() throws Exception {
+        String url1 = "http://www.google.co.uk#1234";
+        String url2 = "/";
+        assertThat(crawler.compareDomainName(url1, url2)).isTrue();
     }
 
     public void willReturnMapOfLinks(){
