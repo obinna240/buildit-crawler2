@@ -1,10 +1,10 @@
 package com.buildit.crawler;
 
+import com.buildit.crawler.exceptions.InvalidCrawlURLException;
 import com.buildit.crawler.exceptions.InvalidDepthException;
+import org.apache.commons.validator.routines.UrlValidator;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public final class Crawler {
 
@@ -12,12 +12,21 @@ public final class Crawler {
     final Map<String, Set<String>> crawledPages;
 
     public Crawler() {
-         this.crawledPages = new TreeMap<String, Set<String>>();
+         this.crawledPages = new LinkedHashMap<String, Set<String>>();
     }
 
     public void crawl(String url, int depth) {
+        if (!validateUrl(url)) {
+            throw new InvalidCrawlURLException("The URL is invalid");
+        }
         if( depth<0 ) {
             throw new InvalidDepthException("depth cannot be a negative number");
         }
+    }
+
+    private boolean validateUrl(String url) {
+        Objects.requireNonNull(url, "The url cannot be null");
+        UrlValidator urlValidator = new UrlValidator();
+        return urlValidator.isValid(url);
     }
 }

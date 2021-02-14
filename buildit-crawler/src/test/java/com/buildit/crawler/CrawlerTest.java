@@ -1,12 +1,11 @@
 package com.buildit.crawler;
 
+import com.buildit.crawler.exceptions.InvalidCrawlURLException;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.buildit.crawler.exceptions.InvalidDepthException;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +37,12 @@ public class CrawlerTest {
             crawler.crawl(testURL1, -1);
         });
 
+    }
+
+    public void willReturnExceptionForInvalidOrNullURL() {
+        assertThrows(InvalidCrawlURLException.class, () -> {
+            crawler.crawl("invalidURL", 1);
+        });
     }
 
 
