@@ -34,11 +34,16 @@ public final class Crawler {
          this.urlIndex = new HashSet<>();
     }
 
+    //default method to crawl
+    public Map crawl(String url){
+        return crawl(url, 0);
+    }
+
     public Map crawl(String url, int crawlDepth) {
         if (!validateUrl(url)) {
             throw new InvalidCrawlURLException("The URL is invalid");
         }
-        if( crawlDepth < 0 ) {
+        if( crawlDepth < 0 || crawlDepth > 5) {
             throw new InvalidDepthException("depth cannot be a negative number");
         }
         if(!urlIndex.contains(url) && crawlDepth < DEFAULT_DEPTH) {

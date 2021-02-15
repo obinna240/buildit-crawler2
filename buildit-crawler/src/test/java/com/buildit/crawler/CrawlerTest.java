@@ -26,12 +26,37 @@ public class CrawlerTest {
         crawler = new Crawler();
     }
 
+
+
     @Test
     @DisplayName("Invalid depth exception")
     public void willReturnExceptionForInvalidDepth() {
         assertThrows(InvalidDepthException.class, () -> {
             crawler.crawl(root, -1);
         });
+    }
+
+    @Test
+    @DisplayName("Invalid depth exception")
+    public void willReturnExceptionForInvalidDepthWhenDepthIsGreaterThanDefaultDepth() {
+        assertThrows(InvalidDepthException.class, () -> {
+            crawler.crawl(root, 5);
+        });
+    }
+
+
+    @Test
+    @DisplayName("Run default crawler")
+    public void willRunDefaultCrawlOnNonFollowExternalLinks() {
+        //when
+        Map<String, Set> indexOfCrawledLinks = crawler.crawl(repeatedNonFollowExternalLinks);
+        List<String> staticContent = Arrays.asList("https://crawler-test.com/", "http://robotto.org", "http://semetrical.com", "http://deepcrawl.co.uk");
+        Set<String> indexedElements = indexOfCrawledLinks.get(repeatedNonFollowExternalLinks);
+
+        //then
+        assertThat(indexedElements.size()).isEqualTo(4);
+        assertThat(root).isEqualTo(indexedElements.iterator().next());
+        assertThat(indexedElements.containsAll(staticContent));
     }
 
     @Test
