@@ -18,12 +18,12 @@ public class BuilditCrawlerApplication {
 			LOGGER.info(INVALID_ARG_MESSAGE);
 		}
 		else if (argLength == 1){
-			LOGGER.info("PREPARING TO START CRAWLING");
+			LOGGER.info("CRAWLING");
 			crawler.crawl(args[0]);
 		}
 		else if (argLength == 2){
-			LOGGER.info("PREPARING TO START CRAWLING");
-			crawler.crawl(args[0], Integer.parseInt(args[2]));
+			LOGGER.info("CRAWLING");
+			crawler.crawl(args[0], Integer.parseInt(args[1]));
 		}
 
 		SpringApplication.run(BuilditCrawlerApplication.class, args);
