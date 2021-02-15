@@ -26,8 +26,6 @@ public class CrawlerTest {
         crawler = new Crawler();
     }
 
-
-
     @Test
     @DisplayName("Invalid depth exception")
     public void willReturnExceptionForInvalidDepth() {
@@ -40,7 +38,7 @@ public class CrawlerTest {
     @DisplayName("Invalid depth exception")
     public void willReturnExceptionForInvalidDepthWhenDepthIsGreaterThanDefaultDepth() {
         assertThrows(InvalidDepthException.class, () -> {
-            crawler.crawl(root, 5);
+            crawler.crawl(root, 6);
         });
     }
 
