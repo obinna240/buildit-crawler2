@@ -77,3 +77,4 @@ Potential improvements will be:
 - Using a database (Mongo or even Couchbase) as a sort of index for the crawled pages so that the can be persisted there and also to enhance speedy retrieval of Key Value pairs
 - Perhaps use a different library other than `Jsoup`. One would be `Crawler4j` which is more configurable and supports configurations like setting the number of threads, run time of the crawler and crawl depth.
 - Reacrchitecting the code so that it is reusable and applicable to other crawl domains besides websites. For instance local directories etc
+- Use something like wiremock in stubbing the crawler urls for the test
